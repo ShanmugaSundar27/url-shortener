@@ -1,0 +1,74 @@
+name: PR Comment Update
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  update:
+    # Only run on PR comments (not issue comments) that mention @claude
+    if: |
+      github.event.issue.pull_request &&
+      contains(github.event.comment.body, '@claude')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+    steps:
+      - name: Get PR branch
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH=$(gh pr view ${{ github.event.issue.number }} \
+            --repo ${{ github.repository }} \
+            --json headRefName --jq .headRefName)
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pr.outputs.branch }}
+          fetch-depth: 0
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: |
+            --model claude-haiku-4-5
+            --allowedTools "Edit,MultiEdit,Write,Read,Glob,Grep,LS,Bash(git:*),Bash(gh:*),Bash(npm:*)"
+            --max-turns 20
+          show_full_output: true
+          prompt: |
+            You are working on PR #${{ github.event.issue.number }} in branch `${{ steps.pr.outputs.branch }}`.
+
+            A reviewer left this comment:
+
+            ---
+            ${{ github.event.comment.body }}
+            ---
+
+            Comment author: @${{ github.event.comment.user.login }}
+
+            You MUST complete ALL steps in order:
+
+            1. Read CLAUDE.md and follow ALL conventions in it.
+            2. Read the PR description and recent commits to understand context:
+                 `gh pr view ${{ github.event.issue.number }}`
+            3. Explore the changed files in this branch.
+            4. Address the comment. Make the requested changes carefully.
+            5. If tests exist, run them and fix any failures.
+            6. Commit your changes:
+                 `git add -A`
+                 `git commit -m "address review: <short summary> (#${{ github.event.issue.number }})"`
+            7. Push to the same branch:
+                 `git push origin HEAD`
+            8. Reply to the comment summarizing what you did:
+                 `gh pr comment ${{ github.event.issue.number }} --body "<short summary of changes made>"`
+
+            If the comment is just a question (no code change requested), skip steps 4-7
+            and only do step 8 — answer the question in a reply comment.
+
+            If the comment is ambiguous, ask for clarification in a reply and stop.
