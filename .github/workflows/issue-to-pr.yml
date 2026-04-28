@@ -22,7 +22,10 @@ jobs:
       - uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          claude_args: "--model claude-haiku-4-5"
+          claude_args: |
+            --model claude-haiku-4-5
+            --allowedTools "Edit,MultiEdit,Write,Read,Glob,Grep,LS,Bash(git:*),Bash(gh:*),Bash(npm:*)"
+            --max-turns 20
           show_full_output: true
           prompt: |
             Issue #${{ github.event.issue.number }}: ${{ github.event.issue.title }}
