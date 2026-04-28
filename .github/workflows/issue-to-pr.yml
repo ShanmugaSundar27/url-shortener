@@ -17,13 +17,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Install dependencies
-        run: npm ci || npm install
-
       - uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -37,11 +30,10 @@ jobs:
             1. Read CLAUDE.md and follow ALL conventions in it
             2. Explore the relevant existing files before writing any code
             3. Create a branch named feature/issue-${{ github.event.issue.number }}-<short-slug>
-            4. Implement the changes, mirroring existing patterns in src/
-            5. Add tests in tests/ covering both happy path and error path
-            6. Run `npm test` and fix any failures until all tests pass
-            7. Open a DRAFT pull request that closes issue #${{ github.event.issue.number }}
-            8. Paste the `npm test` output into the PR description
+            4. Implement the changes, mirroring existing patterns
+            5. If the project has tests, run them and fix any failures
+            6. Open a DRAFT pull request that closes issue #${{ github.event.issue.number }}
+            7. In the PR description, describe what was changed and any decisions made
 
             If the issue is ambiguous or scope is too large, comment on the issue
             asking for clarification instead of guessing.
