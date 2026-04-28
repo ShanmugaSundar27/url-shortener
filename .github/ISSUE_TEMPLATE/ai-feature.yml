@@ -1,0 +1,46 @@
+name: AI-implementable feature
+description: Feature or bug fix to be implemented autonomously by Claude
+title: "[AI] "
+labels: ["ai-implement"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: One sentence describing what should change
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Checklist of what "done" looks like
+      placeholder: |
+        - [ ] New endpoint POST /xyz accepts { foo: string }
+        - [ ] Returns 400 if foo is missing
+        - [ ] Tests cover both happy path and error path
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and non-goals
+      description: What should NOT be changed in this PR
+      placeholder: |
+        - Do not modify the existing /shorten endpoint
+        - Do not add new dependencies
+    validations:
+      required: true
+
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Files, functions, or docs Claude should consult
+      placeholder: |
+        - src/app.ts (existing route patterns)
+        - src/store.ts (UrlStore class)
+    validations:
+      required: false

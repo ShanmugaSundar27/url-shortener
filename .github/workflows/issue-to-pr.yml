@@ -1,0 +1,47 @@
+name: Issue to PR
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  implement:
+    if: github.event.label.name == 'ai-implement'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: "--model claude-opus-4-5"
+          prompt: |
+            Issue #${{ github.event.issue.number }}: ${{ github.event.issue.title }}
+
+            ${{ github.event.issue.body }}
+
+            Implement this issue end-to-end:
+            1. Read CLAUDE.md and follow ALL conventions in it
+            2. Explore the relevant existing files before writing any code
+            3. Create a branch named feature/issue-${{ github.event.issue.number }}-<short-slug>
+            4. Implement the changes, mirroring existing patterns in src/
+            5. Add tests in tests/ covering both happy path and error path
+            6. Run `npm test` and fix any failures until all tests pass
+            7. Open a DRAFT pull request that closes issue #${{ github.event.issue.number }}
+            8. Paste the `npm test` output into the PR description
+
+            If the issue is ambiguous or scope is too large, comment on the issue
+            asking for clarification instead of guessing.
