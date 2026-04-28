@@ -29,14 +29,21 @@ jobs:
 
             ${{ github.event.issue.body }}
 
-            Implement this issue end-to-end:
-            1. Read CLAUDE.md and follow ALL conventions in it
-            2. Explore the relevant existing files before writing any code
-            3. Create a branch named feature/issue-${{ github.event.issue.number }}-<short-slug>
-            4. Implement the changes, mirroring existing patterns
-            5. If the project has tests, run them and fix any failures
-            6. Open a DRAFT pull request that closes issue #${{ github.event.issue.number }}
-            7. In the PR description, describe what was changed and any decisions made
+            You MUST complete ALL of these steps in order. Do not stop early.
 
-            If the issue is ambiguous or scope is too large, comment on the issue
-            asking for clarification instead of guessing.
+            1. Read CLAUDE.md and follow ALL conventions in it.
+            2. Explore relevant existing files before writing any code.
+            3. Create a branch: `git checkout -b feature/issue-${{ github.event.issue.number }}-<short-slug>`
+            4. Implement the changes. Write each file ONLY ONCE.
+            5. If the project has tests, run them and fix any failures.
+            6. Stage and commit your changes:
+                 `git add -A`
+                 `git commit -m "<type>: <description> (#${{ github.event.issue.number }})"`
+            7. Push the branch:
+                 `git push -u origin feature/issue-${{ github.event.issue.number }}-<short-slug>`
+            8. Open a DRAFT pull request using the gh CLI:
+                 `gh pr create --draft --title "<type>: <description> (#${{ github.event.issue.number }})" --body "Closes #${{ github.event.issue.number }}\n\n## Summary\n<what changed>\n\n## Notes\n<any decisions>"`
+            9. Confirm the PR URL was printed. Your task is NOT complete until step 8 succeeds.
+
+            If the issue is ambiguous, comment on the issue and stop. Otherwise,
+            you must reach step 8 — do not stop after writing files.
