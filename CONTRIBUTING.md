@@ -2,17 +2,20 @@
 
 We welcome contributions! Here's how to help.
 
+## Getting started
+
+1. Clone the repository: `git clone https://github.com/ShanmugaSundar27/url-shortener.git`
+2. Install dependencies: `npm install`
+3. Run tests: `npm test`
+
 ## Development setup
 
 ### Prerequisites
 - Node.js 20 or later
 - npm (comes with Node.js)
 
-### Getting started
-1. Clone the repository: `git clone https://github.com/ShanmugaSundar27/url-shortener.git`
-2. Install dependencies: `npm install`
-3. Run tests: `npm test` — all tests must pass before opening a PR
-4. Start the development server: `npm run dev`
+### Local development
+Start the development server: `npm run dev`
 
 The server will run on `http://localhost:3000` by default. Make changes to files in `src/` and tests in `tests/`, following the TypeScript and ESM conventions outlined in CLAUDE.md.
 
