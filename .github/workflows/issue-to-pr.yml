@@ -3,10 +3,17 @@ name: Issue to PR
 on:
   issues:
     types: [labeled]
+  issue_comment:
+    types: [created]
 
 jobs:
   implement:
-    if: github.event.label.name == 'ai-implement'
+    if: |
+      (github.event_name == 'issues' && github.event.label.name == 'ai-implement') ||
+      (github.event_name == 'issue_comment' &&
+       !github.event.issue.pull_request &&
+       contains(github.event.comment.body, '@claude') &&
+       github.event.comment.user.type != 'Bot')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -31,6 +38,8 @@ jobs:
             Issue #${{ github.event.issue.number }}: ${{ github.event.issue.title }}
 
             ${{ github.event.issue.body }}
+
+            ${{ github.event_name == 'issue_comment' && format('---{0}{0}Latest comment from @{1}:{0}{0}{2}{0}{0}Act on this comment specifically.
 
             You MUST complete ALL of these steps in order. Do not stop early.
 
