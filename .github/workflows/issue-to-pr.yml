@@ -39,7 +39,7 @@ jobs:
 
             ${{ github.event.issue.body }}
 
-            ${{ github.event_name == 'issue_comment' && format('---{0}{0}Latest comment from @{1}:{0}{0}{2}{0}{0}Act on this comment specifically.
+            ${{ github.event_name == 'issue_comment' && format('---{0}{0}Latest comment from @{1}:{0}{0}{2}{0}{0}Act on this comment specifically.}}
 
             You MUST complete ALL of these steps in order. Do not stop early.
 
