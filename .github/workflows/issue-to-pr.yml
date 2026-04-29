@@ -12,7 +12,7 @@ jobs:
       (github.event_name == 'issues' && github.event.label.name == 'ai-implement') ||
       (github.event_name == 'issue_comment' &&
        !github.event.issue.pull_request &&
-       contains(github.event.comment.body, '@claude') &&
+       contains(github.event.issue.labels.*.name, 'ai-implement') &&
        github.event.comment.user.type != 'Bot')
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -39,23 +39,26 @@ jobs:
 
             ${{ github.event.issue.body }}
 
-             ${{ github.event_name == 'issue_comment' && format('--- Latest comment from @{0}: {1} --- Act on this comment specifically. If a branch already exists for this issue, push additional commits to it instead of creating a new branch.', github.event.comment.user.login, github.event.comment.body) || '' }}
+            ${{ github.event_name == 'issue_comment' && format('--- Latest comment from @{0}: {1} --- Act on this comment specifically. If a branch already exists for this issue, push additional commits to it instead of creating a new branch.', github.event.comment.user.login, github.event.comment.body) || '' }}
 
             You MUST complete ALL of these steps in order. Do not stop early.
 
             1. Read CLAUDE.md and follow ALL conventions in it.
             2. Explore relevant existing files before writing any code.
-            3. Create a branch: `git checkout -b feature/issue-${{ github.event.issue.number }}-<short-slug>`
+            3. Check whether a branch `feature/issue-${{ github.event.issue.number }}-*` already exists.
+               - If it does, check it out and continue work on it.
+               - If not, create a new branch: `git checkout -b feature/issue-${{ github.event.issue.number }}-<short-slug>`
             4. Implement the changes. Write each file ONLY ONCE.
             5. If the project has tests, run them and fix any failures.
             6. Stage and commit your changes:
                  `git add -A`
                  `git commit -m "<type>: <description> (#${{ github.event.issue.number }})"`
             7. Push the branch:
-                 `git push -u origin feature/issue-${{ github.event.issue.number }}-<short-slug>`
-            8. Open a DRAFT pull request using the gh CLI:
+                 `git push -u origin <branch-name>`
+            8. If no PR exists yet for this branch, open a DRAFT pull request using the gh CLI:
                  `gh pr create --draft --title "<type>: <description> (#${{ github.event.issue.number }})" --body "Closes #${{ github.event.issue.number }}\n\n## Summary\n<what changed>\n\n## Notes\n<any decisions>"`
-            9. Confirm the PR URL was printed. Your task is NOT complete until step 8 succeeds.
+               If a PR already exists for this branch, skip this step — your push from step 7 will update it automatically.
+            9. Confirm the PR URL was printed or that the existing PR was updated. Your task is NOT complete until step 8 succeeds (or is skipped because a PR already exists).
 
             If the issue is ambiguous, comment on the issue and stop. Otherwise,
             you must reach step 8 — do not stop after writing files.
